@@ -39,5 +39,9 @@ Route::prefix('user')->group(function () {
     Route::middleware(['auth:api', 'role:user'])->group(function () {
         Route::get('profile', [UserProfileController::class, 'profile']);
         Route::post('logout', [UserProfileController::class, 'logout']);
+
+        Route::prefix('user')->group(function () {
+
+        });
     });
 });
