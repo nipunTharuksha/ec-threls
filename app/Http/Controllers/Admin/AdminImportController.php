@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ImportRequest;
 use App\Services\ImportCSV;
+use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AdminImportController extends Controller
 {
     /**
-     * @throws ValidationException
+     * @throws ValidationException|Throwable
      */
     public function importProducts(ImportRequest $request): JsonResponse
     {
@@ -35,7 +37,9 @@ class AdminImportController extends Controller
             $products[] = ['name' => $values[0], 'brand' => $values[1], 'price' => $values[2]];
         }
 
-        $success = (new ImportCSV($products))->import();
+        $success = DB::transaction(function () use ($products) {
+            return (new ImportCSV($products))->import();
+        });
 
         return response()->json(['success' => $success]);
     }

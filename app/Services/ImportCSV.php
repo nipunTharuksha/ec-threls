@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Brand;
-use App\Models\Product;
 use DB;
 
 class ImportCSV
@@ -26,18 +25,8 @@ class ImportCSV
         $data = $this->prepareData($brandNames);
         $chunkedData = collect($data)->chunk(count($data) / 10);
 
-        $existingProductsQuery = Product::query();
-        $chunkedData->each(function ($products) use ($existingProductsQuery) {
-            $productsToBeInserted = [];
-            dd($products->random());
+        $chunkedData->each(function ($products) {
             DB::table('products')->insert($products->toArray());
-           //  Product::upsert($products->toArray(), ['name', 'brand_id',  'currency']);
-           /* foreach ($products as $product) {
-                if ((clone $existingProductsQuery)->where(collect($product)->only('name','brand_id')->toArray())->doesntExist()) {
-                    $productsToBeInserted[] = $product;
-                }
-            }
-            DB::table('products')->insert($productsToBeInserted);*/
         });
 
         return true;
@@ -82,7 +71,7 @@ class ImportCSV
             }
         }
 
-        return collect($finalData)->sortBy('name')->toArray();
+        return collect($finalData)->sortBy('name')->values()->all();
     }
 
 }
