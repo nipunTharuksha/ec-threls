@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Profile\AdminProfileController;
 use App\Http\Controllers\User\Auth\UserLoginController;
 use App\Http\Controllers\User\Auth\UserProfileController;
 use App\Http\Controllers\User\Auth\UserRegisterController;
+use App\Http\Controllers\User\UserProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,8 +41,7 @@ Route::prefix('user')->group(function () {
         Route::get('profile', [UserProfileController::class, 'profile']);
         Route::post('logout', [UserProfileController::class, 'logout']);
 
-        Route::prefix('user')->group(function () {
-
-        });
     });
 });
+
+Route::apiResource('products', UserProductController::class);
