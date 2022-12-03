@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminImportController;
 use App\Http\Controllers\Admin\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\Profile\AdminProfileController;
 use App\Http\Controllers\User\Auth\UserLoginController;
@@ -24,6 +25,8 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth:api', 'role:admin'])->group(function () {
         Route::get('profile', [AdminProfileController::class, 'profile']);
         Route::post('logout', [AdminProfileController::class, 'logout']);
+
+        Route::post('products/import', [AdminImportController::class, 'importProducts']);
     });
 });
 

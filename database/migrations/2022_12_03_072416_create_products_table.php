@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->index();
             $table->foreignId('brand_id')->constrained();
-            $table->bigInteger('price');
+            $table->unsignedBigInteger('price');
             $table->string('currency');
             $table->timestamps();
         });
