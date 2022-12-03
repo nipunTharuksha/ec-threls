@@ -1,6 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\Profile\AdminProfileController;
+use App\Http\Controllers\User\Auth\UserLoginController;
+use App\Http\Controllers\User\Auth\UserProfileController;
+use App\Http\Controllers\User\Auth\UserRegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +18,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('admin')->group(function () {
+    Route::post('login', [AdminLoginController::class, 'login'])->middleware(['guest:api']);
+
+    Route::middleware(['auth:api', 'role:admin'])->group(function () {
+        Route::get('profile', [AdminProfileController::class, 'profile']);
+        Route::post('logout', [AdminProfileController::class, 'logout']);
+    });
+});
+
+Route::prefix('user')->group(function () {
+    Route::middleware(['guest:api'])->group(function () {
+        Route::post('login', [UserLoginController::class, 'login']);
+        Route::post('register', [UserRegisterController::class, 'register']);
+    });
+
+    Route::middleware(['auth:api', 'role:user'])->group(function () {
+        Route::get('profile', [UserProfileController::class, 'profile']);
+        Route::post('logout', [UserProfileController::class, 'logout']);
+    });
 });
