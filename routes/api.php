@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Profile\AdminProfileController;
 use App\Http\Controllers\User\Auth\UserLoginController;
 use App\Http\Controllers\User\Auth\UserProfileController;
 use App\Http\Controllers\User\Auth\UserRegisterController;
+use App\Http\Controllers\User\UserCartController;
 use App\Http\Controllers\User\UserProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,7 +42,12 @@ Route::prefix('user')->group(function () {
         Route::get('profile', [UserProfileController::class, 'profile']);
         Route::post('logout', [UserProfileController::class, 'logout']);
 
+        Route::get('cart-data', [UserCartController::class, 'cartData']);
+        Route::post('add-item-to-cart', [UserCartController::class, 'addToCart']);
+        Route::delete('remove-item-from-cart/{cart_item_id}', [UserCartController::class, 'removeFromCart']);
+        Route::patch('update-item-qty/{cart_item_id}', [UserCartController::class, 'updateItemQuantity']);
+        Route::delete('delete-cart', [UserCartController::class, 'deleteCart']);
     });
 });
 
-Route::apiResource('products', UserProductController::class);
+Route::apiResource('products', UserProductController::class)->only(['index', 'show']);

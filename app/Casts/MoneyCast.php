@@ -2,8 +2,7 @@
 
 namespace App\Casts;
 
-use Brick\Money\Exception\UnknownCurrencyException;
-use Brick\Money\Money;
+
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,12 +15,11 @@ class MoneyCast implements CastsAttributes
      * @param string $key
      * @param mixed $value
      * @param array $attributes
-     * @return Money
-     * @throws UnknownCurrencyException
+     * @return mixed
      */
-    public function get($model, string $key, $value, array $attributes): Money
+    public function get($model, string $key, $value, array $attributes)
     {
-        return Money::ofMinor($attributes['price'], $attributes['currency']);
+        return number_format($attributes['price'] / 100, 2);
     }
 
     /**
@@ -35,9 +33,6 @@ class MoneyCast implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes): mixed
     {
-        if (!$value instanceof Money) {
-            return $value;
-        }
-        return $value->getMinorAmount()->toInt();
+        return $value;
     }
 }
