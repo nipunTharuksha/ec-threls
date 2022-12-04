@@ -1,66 +1,175 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# E-Commerce - API
 
-## About Laravel
+## Requirements
+* Import products via a CSV
+* Authentication for user with reigstration,login and logout
+* End users should be able to add products in to cart and they should be able to place an order
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Demo
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Insert gif or link to demo
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Run Locally
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Clone the project
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+  git@github.com:nipunTharuksha/ec-threls.git
+```
 
-## Laravel Sponsors
+Go to the project directory
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+  cd ec-threls
+```
 
-### Premium Partners
+Install dependencies
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+  composer install
+```
 
-## Contributing
+Create .env and update DB credentials
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Initialize the project (Below command will execute all required commands as a sequence)
 
-## Code of Conduct
+```bash
+php artisan project:init
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Start the server
 
-## Security Vulnerabilities
+```bash
+  php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+## API Reference
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+https://documenter.getpostman.com/view/19165023/2s8YzMXQYe#intro
+
+
+## Packages used
+
+* [Laravel-model-states](https://spatie.be/docs/laravel-model-states/v2/01-introduction) - Used for order states ,payment states . 
+```
+public static function config():StateConfig {
+        return parent::config()
+            ->default(PaymentPendingState::class)
+            ->allowTransition(PaymentPendingState::class, PaymentDeclinedState::class)
+            ->allowTransition(PaymentPendingState::class, PaymentAcceptedState::class);
+}
+```
+
+* [Laravel-query-builder](https://spatie.be/docs/laravel-query-builder/v5/introduction) - Used for query filters
+
+
+
+```
+/**
+     * @return DataResourceCollection
+     */
+    public function index(): DataResourceCollection
+    {
+        $productsQuery = QueryBuilder::for(Product::with('brand:id,name'))
+            ->select(['id', 'name', 'price', 'brand_id', 'currency', 'created_at'])
+            ->allowedFilters([
+                AllowedFilter::callback('search', function ($query, $value) {
+                    $query->where(function ($query) use ($value) {
+                        $query->where('name', 'like', '%' . $value . '%')
+                            ->orWhereHas('brand', function ($query) use ($value) {
+                                $query->where('name', 'like', '%' . $value . '%');
+                            });
+                    });
+                })
+            ]);
+
+        return new DataResourceCollection($this->paginate($productsQuery));
+    }
+```
+
+* [Laravel-permission](https://spatie.be/docs/laravel-permission/v5/introduction) - Used for user roles
+
+
+
+```
+Route::middleware(['auth:api', 'role:user'])
+```
+
+```
+$user = User::create($data);
+$user->assignRole('user');
+```
+
+* [Laravel-enum](https://github.com/BenSampo/laravel-enum) - Used for payment types
+
+
+
+```
+/**
+ * @method static static COD()
+ * @method static static CP()
+ */
+final class OrderPaymentType extends Enum
+{
+    const COD = 'COD'; // Cash on delivery
+    const CP = 'CP'; // Card payment
+}
+```
+
+* [Laravel-API-response-helpers](https://github.com/f9webltd/laravel-api-response-helpers) - Used for responses
+
+
+
+```
+ return $this->respondCreated();
+```
+
+* [Laravel-cart-manager](https://github.com/freshbitsweb/laravel-cart-manager) - Used for cart related functionalities
+
+
+
+```
+     /**
+     * @return DataResource
+     */
+    public function cartData(): DataResource
+    {
+        cart()->setUser(auth()->id());
+        return new DataResource([cart()->totals() + ['items' => cart()->items(true)]]);
+    }
+```
+
+```
+    /**
+     * @param $cartItemId
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function removeFromCart($cartItemId): JsonResponse
+    {
+        cart()->setUser(auth()->id());
+
+        $this->validateItem($cartItemId);
+
+        cart()->removeAt($this->getItemIndex($cartItemId));
+
+        return $this->respondNoContent();
+    }
+```
+
+```
+    /**
+     * @return JsonResponse
+     */
+    public function deleteCart(): JsonResponse
+    {
+        cart()->setUser(auth()->id());
+        cart()->clear();
+        return $this->respondNoContent();
+    }
+```
+
