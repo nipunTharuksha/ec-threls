@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Brand;
+use App\Models\Product;
 use DB;
 
 class ImportCSV
@@ -25,8 +26,9 @@ class ImportCSV
         $data = $this->prepareData($brandNames);
 
         $chunkedData = collect($data)->chunk(count($data) / 10);
+        $existingProducts = Product::query();
 
-        $chunkedData->each(function ($products) {
+        $chunkedData->each(function ($products) use ($existingProducts){
             DB::table('products')->insert($products->toArray());
         });
 

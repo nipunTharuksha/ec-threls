@@ -24,9 +24,9 @@ class ProjectInitCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Artisan::call('migrate:fresh', ['--seed' => true]);
         $this->info(Artisan::output());

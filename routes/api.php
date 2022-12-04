@@ -43,6 +43,7 @@ Route::prefix('user')->group(function () {
         Route::get('profile', [UserProfileController::class, 'profile']);
         Route::post('logout', [UserProfileController::class, 'logout']);
 
+        //Using separate routes instead of using the apiResource for readability
         Route::get('cart-data', [UserCartController::class, 'cartData']);
         Route::post('add-item-to-cart', [UserCartController::class, 'addToCart']);
         Route::delete('remove-item-from-cart/{cart_item_id}', [UserCartController::class, 'removeFromCart']);
