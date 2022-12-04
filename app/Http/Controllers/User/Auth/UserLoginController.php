@@ -24,16 +24,10 @@ class UserLoginController extends Controller
     {
         $data = $request->validated();
 
-        $error = ['error_message' => 'Incorrect Details. Please try again'];
-
         $user = User::whereEmail($data['email'])->first();
 
-        if (!$user || !($user->hasRole('user'))) {
-            return response()->json($error, 422);
-        }
-
-        if (!auth()->attempt($data)) {
-            return response()->json($error, 422);
+        if (!$user || !($user->hasRole('user')) || !auth()->attempt($data)) {
+            return response()->json( ['error_message' => 'Incorrect Details. Please try again'], 422);
         }
 
         return new DataResource([
