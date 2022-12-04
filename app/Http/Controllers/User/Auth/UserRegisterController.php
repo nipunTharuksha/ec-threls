@@ -22,6 +22,6 @@ class UserRegisterController extends Controller
         $user = User::create($data);
         $user->assignRole('user');
 
-        return response()->json(['success' => true]);
+        return $this->respondCreated();
     }
 }
