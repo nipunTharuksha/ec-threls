@@ -11,4 +11,9 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests,ApiResponseHelpers;
+
+    public function paginate($query)
+    {
+        return $query->paginate(request('paginate') && is_numeric(request('paginate')) ? request('paginate') : 10);
+    }
 }

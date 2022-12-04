@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\DataResource;
-use App\Http\Resources\ProductResourceCollection;
+use App\Http\Resources\DataResourceCollection;
 use App\Models\Product;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
-class UserProductController extends Controller
+class ProductController extends Controller
 {
     /**
-     * @return ProductResourceCollection
+     * @return DataResourceCollection
      */
-    public function index(): ProductResourceCollection
+    public function index(): DataResourceCollection
     {
-        $products = QueryBuilder::for(Product::with('brand:id,name'))
+        $productsQuery = QueryBuilder::for(Product::with('brand:id,name'))
+            ->select(['id', 'name', 'price', 'brand_id', 'currency', 'created_at'])
             ->allowedFilters([
                 AllowedFilter::callback('search', function ($query, $value) {
                     $query->where(function ($query) use ($value) {
@@ -26,10 +26,9 @@ class UserProductController extends Controller
                             });
                     });
                 })
-            ])
-            ->paginate(request('paginate') && is_numeric(request('paginate')) ? request('paginate') : 10);
+            ]);
 
-        return new ProductResourceCollection($products);
+        return new DataResourceCollection($this->paginate($productsQuery));
     }
 
     /**
@@ -38,6 +37,6 @@ class UserProductController extends Controller
      */
     public function show(Product $product): DataResource
     {
-        return new DataResource($product);
+        return new DataResource($product->load('brand:id,name'));
     }
 }
