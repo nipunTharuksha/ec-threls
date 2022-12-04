@@ -34,7 +34,7 @@ class AdminImportController extends Controller
                 throw ValidationException::withMessages(['Please check your CSV file again']);
             }
             $values = str_getcsv($line);
-            $products[] = ['name' => $values[0], 'brand' => $values[1], 'price' => $values[2]];
+            $products[] = ['temp_id' => $index,'name' => $values[0], 'brand' => $values[1], 'price' => $values[2]];
         }
 
         $success = DB::transaction(function () use ($products) {

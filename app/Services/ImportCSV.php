@@ -23,6 +23,7 @@ class ImportCSV
 
         $this->createBrands($brandNames);
         $data = $this->prepareData($brandNames);
+
         $chunkedData = collect($data)->chunk(count($data) / 10);
 
         $chunkedData->each(function ($products) {
@@ -71,7 +72,10 @@ class ImportCSV
             }
         }
 
-        return collect($finalData)->sortBy('name')->values()->all();
+        return collect($finalData)->sortBy('temp_id')->values()->transform(function ($item) {
+            unset($item['temp_id']);
+            return $item;
+        })->toArray();
     }
 
 }
